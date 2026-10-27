@@ -900,7 +900,7 @@ async function boot() {
       net.sid = r.sid; net.least = r.least; S.credit = r.balance;
       fitBet(); start();
       $('#footText').textContent = 'Онлайн-режим: кредиты хранятся на сервере игры.';
-      setMsg(`Минимальная ставка: ${fmt(net.least)} · удачи!`);
+      setMsg(net.least > BETS[0] ? `Минимальная ставка: ${fmt(net.least)} · удачи!` : 'Удачи! Пробел — вращение');
       return;
     }
     // No session: the game still runs, on credits of this browser
