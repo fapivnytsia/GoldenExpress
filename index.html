@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Золотой Экспресс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;500;600;700&family=Share+Tech+Mono&display=swap">
+<style>
+/* Layout: one casino cabinet — bulb-lit marquee, chrome-framed 5×3 reel window with numbered line tabs, message strip, then a full-width black control bar with LED readouts and lit cap buttons */
+:root{
+  --room:#0b0507;
+  --velvet:#3a0a12;
+  --cab-1:#24171a;
+  --cab-2:#120a0c;
+  --chrome-1:#f4f4f6;
+  --chrome-2:#8d8f97;
+  --chrome-3:#3d3f46;
+  --gold:#ffcc4d;
+  --gold-d:#b8841c;
+  --gold-l:#fff1b8;
+  --reel:#fbf7ee;
+  --reel-shade:#c9c1b0;
+  --led:#ffb02e;
+  --led-dim:#5a3a10;
+  --led-red:#ff4a3a;
+  --led-green:#5cff8a;
+  --bar:#070708;
+  --text:#f6efe6;
+  --dim:#b9a99a;
+  --red:#d81f2a;
+  --green:#1fae4a;
+  --blue:#2a6bd8;
+  --amber:#f2a516;
+  --f-title:"Russo One","Arial Black",Impact,sans-serif;
+  --f-ui:"Rubik",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-led:"Share Tech Mono",ui-monospace,"Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:
+    radial-gradient(80% 60% at 50% 20%, var(--velvet), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.015) 0 2px, transparent 2px 6px),
+    var(--room);
+  color:var(--text);font:400 15px/1.4 var(--f-ui);-webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit}
+
+.wrap{
+  max-width:1120px;margin:0 auto;
+  padding-block:14px 24px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.cabinet{
+  position:relative;border-radius:22px;padding:14px;
+  background:linear-gradient(180deg,var(--cab-1),var(--cab-2));
+  box-shadow:0 0 0 2px var(--chrome-3), 0 0 0 5px #000, 0 30px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08);
+  display:grid;gap:12px;
+}
+
+/* marquee */
+.marquee{
+  position:relative;border-radius:14px;padding:16px 20px;text-align:center;overflow:hidden;
+  background:radial-gradient(120% 140% at 50% 0%, #7a0d1a 0%, #3a050c 70%);
+  box-shadow:inset 0 0 0 3px var(--gold-d), inset 0 0 0 6px #2a0306, inset 0 0 30px rgba(0,0,0,.6);
+}
+.bulbs{position:absolute;inset:6px;pointer-events:none;border-radius:10px}
+.bulbs i{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold-l);box-shadow:0 0 8px var(--gold),0 0 2px #fff;opacity:.25;animation:bulb 1.2s steps(1) infinite}
+@keyframes bulb{0%,49%{opacity:1}50%,100%{opacity:.22}}
+.marquee h1{
+  margin:0;font:400 clamp(26px,6.5vw,56px)/1 var(--f-title);letter-spacing:.04em;text-transform:uppercase;
+  background:linear-gradient(180deg,#fff7d0 0%,var(--gold) 45%,var(--gold-d) 55%,#ffe08a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 3px 0 #5a0a10) drop-shadow(0 0 18px rgba(255,180,60,.35));
+}
+.marquee p{margin:6px 0 0;font:600 12px var(--f-ui);letter-spacing:.24em;text-transform:uppercase;color:#ffd9a0}
+
+/* screen */
+.screen{
+  width:100%;justify-self:center;max-width:max(340px, calc((100vh - 420px) * 1.64 + 90px));
+  position:relative;display:grid;grid-template-columns:28px minmax(0,1fr) 28px;gap:8px;align-items:stretch;
+  padding:10px;border-radius:16px;
+  background:linear-gradient(180deg,var(--chrome-1),var(--chrome-2) 30%,var(--chrome-3) 60%,var(--chrome-2));
+  box-shadow:inset 0 2px 0 #fff, inset 0 -2px 0 rgba(0,0,0,.5), 0 6px 20px rgba(0,0,0,.6);
+}
+.tabs{display:grid;grid-template-rows:repeat(10,1fr);gap:3px}
+.tab{
+  display:grid;place-items:center;border:0;border-radius:4px;padding:0;cursor:pointer;
+  font:700 11px var(--f-led);color:#fff;background:var(--c);opacity:.28;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35);
+  transition:opacity .2s, transform .15s;
+}
+.tab.on{opacity:1}
+.tab.hot{transform:scale(1.18);box-shadow:0 0 10px var(--c), inset 0 -2px 0 rgba(0,0,0,.35)}
+.tab:focus-visible{outline:2px solid #fff;outline-offset:1px}
+.reels{
+  position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px;border-radius:10px;
+  background:#111;box-shadow:inset 0 0 0 2px #000, inset 0 0 18px rgba(0,0,0,.8);
+  aspect-ratio:5 / 3.05;
+}
+.reel{position:relative;overflow:hidden;border-radius:6px;background:linear-gradient(90deg,var(--reel-shade),var(--reel) 18%,#fff 50%,var(--reel) 82%,var(--reel-shade))}
+.reel::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.42),transparent 22%,transparent 78%,rgba(0,0,0,.42))}
+.strip{position:absolute;left:0;right:0;top:0;will-change:transform}
+.reel.spin .strip{filter:blur(1.2px)}
+.cell{position:relative;display:grid;place-items:center}
+.cell svg{width:82%;height:82%;overflow:visible;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.cell.win::before{
+  content:"";position:absolute;inset:4%;border-radius:10px;border:3px solid var(--lc,var(--gold));
+  box-shadow:0 0 14px var(--lc,var(--gold)), inset 0 0 14px var(--lc,var(--gold));animation:frame .7s ease-in-out infinite alternate;
+}
+.cell.win svg{animation:pulse .7s ease-in-out infinite alternate}
+.cell.dim{opacity:.35}
+@keyframes frame{from{opacity:.55}to{opacity:1}}
+@keyframes pulse{to{transform:scale(1.1)}}
+.lines{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);pointer-events:none;z-index:3;overflow:visible}
+.lines polyline{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 3px rgba(0,0,0,.8))}
+.fsBadge{
+  position:absolute;left:50%;top:-14px;transform:translateX(-50%);z-index:5;padding:4px 14px;border-radius:999px;
+  background:linear-gradient(180deg,#6af,#2a5bd8);color:#fff;font:400 14px var(--f-title);letter-spacing:.06em;white-space:nowrap;
+  box-shadow:0 0 0 2px #fff, 0 4px 14px rgba(0,0,0,.5);
+}
+@media (max-width:640px){
+  .screen{grid-template-columns:minmax(0,1fr);padding:7px}
+  .tabs{display:none}
+  .reels{gap:4px;padding:4px}
+}
+
+/* message strip */
+.msg{
+  min-height:40px;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 14px;border-radius:10px;text-align:center;
+  background:#050505;box-shadow:inset 0 0 0 1px #2a2a2a, inset 0 0 20px rgba(255,160,40,.06);
+  font:400 clamp(14px,3.6vw,18px)/1.2 var(--f-led);color:var(--led);text-shadow:0 0 8px rgba(255,176,46,.6);letter-spacing:.04em;
+}
+.msg.good{color:var(--led-green);text-shadow:0 0 8px rgba(92,255,138,.6)}
+.msg.bad{color:var(--led-red);text-shadow:0 0 8px rgba(255,74,58,.6)}
+
+/* control bar */
+.bar{
+  container-type:inline-size;
+  display:grid;gap:12px;padding:14px;border-radius:14px;
+  background:linear-gradient(180deg,#1a1a1e,var(--bar) 30%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.08), inset 0 0 0 1px #2c2c33, 0 -2px 0 var(--chrome-3);
+}
+.leds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.led{display:grid;gap:3px;padding:8px 10px;border-radius:8px;background:#030303;box-shadow:inset 0 0 0 1px #2a2a2a, inset 0 2px 8px rgba(0,0,0,.8);min-width:0}
+.led span{font:600 10px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.led b{font:400 clamp(18px,3.2vw,30px)/1 var(--f-led);color:var(--led);text-shadow:0 0 10px rgba(255,176,46,.55);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.led.win b{color:var(--led-green);text-shadow:0 0 10px rgba(92,255,138,.55)}
+.led.win.flash b{animation:ledflash .25s steps(2) 6}
+@keyframes ledflash{50%{opacity:.2}}
+.btns{display:grid;grid-template-columns:auto auto auto auto auto auto auto 1.6fr;gap:10px;align-items:stretch}
+.grp{display:grid;grid-template-columns:44px auto 44px;gap:4px;align-items:center;padding:4px;border-radius:10px;background:#111;box-shadow:inset 0 0 0 1px #2a2a2a}
+.grp .lbl{padding:0 6px;text-align:center;font:600 11px/1.15 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.cap{
+  --cap:#555;
+  position:relative;min-height:52px;min-width:44px;padding:6px 12px;border-radius:9px;border:0;cursor:pointer;
+  font:400 13px/1.1 var(--f-title);letter-spacing:.05em;text-transform:uppercase;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);
+  background:radial-gradient(120% 90% at 50% 10%, color-mix(in srgb, var(--cap) 55%, #fff), var(--cap) 55%, color-mix(in srgb, var(--cap) 60%, #000));
+  box-shadow:0 4px 0 color-mix(in srgb, var(--cap) 45%, #000), 0 0 0 2px #000, inset 0 1px 0 rgba(255,255,255,.5), 0 0 16px color-mix(in srgb, var(--cap) 40%, transparent);
+  transition:transform .06s, box-shadow .06s, filter .2s, opacity .2s;
+}
+.cap:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb, var(--cap) 45%, #000), 0 0 0 2px #000, inset 0 1px 0 rgba(255,255,255,.4)}
+.cap:disabled{filter:grayscale(.85) brightness(.45);cursor:not-allowed;box-shadow:0 4px 0 #111, 0 0 0 2px #000}
+.cap:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.cap.sm{min-height:44px;padding:0;font-size:22px}
+.cap.red{--cap:var(--red)}
+.cap.green{--cap:var(--green)}
+.cap.blue{--cap:var(--blue)}
+.cap.amber{--cap:var(--amber)}
+.cap.grey{--cap:#5a5a66}
+.cap[aria-pressed="true"]{filter:brightness(1.25);box-shadow:0 4px 0 color-mix(in srgb, var(--cap) 45%, #000), 0 0 0 2px #fff, 0 0 22px var(--cap)}
+.cap.blink:not(:disabled){animation:capblink .8s steps(2) infinite}
+@keyframes capblink{50%{filter:brightness(1.6)}}
+.spin{
+  --cap:var(--green);min-height:64px;font-size:clamp(20px,3vw,28px);letter-spacing:.08em;border-radius:12px;
+}
+.spin.stop{--cap:var(--red)}
+.foot{margin:0;text-align:center;font-size:12px;color:var(--dim)}
+
+@container (max-width:900px){
+  .btns{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .btns .grp{grid-column:span 2;grid-template-columns:48px 1fr 48px}
+  .btns .spin{grid-column:1 / -1;order:9}
+}
+@container (max-width:520px){
+  .btns{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .btns .grp{grid-column:span 1;grid-template-columns:38px minmax(0,1fr) 38px;gap:2px}
+  .btns .grp .cap.sm{min-width:38px}
+  .btns .grp .lbl{padding:0 2px;font-size:10px;letter-spacing:.06em}
+  .btns .spin{min-height:68px;font-size:26px}
+}
+@media (max-width:640px){
+  .cabinet{padding:10px;gap:10px;border-radius:16px}
+  .marquee{padding:12px 12px}
+  .leds{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .leds .led:nth-child(n+4){grid-column:span 1}
+  .led{padding:6px 8px}
+  .led.hide-sm{display:none}
+  .bar{padding:10px}
+  .cap{font-size:12px;padding:6px 8px}
+}
+
+/* overlays */
+.ov{position:fixed;inset:0;z-index:40;display:grid;place-items:center;overflow:auto;background:rgba(0,0,0,.72);
+  padding:max(16px, env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-right,0px)) max(16px, env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-left,0px));animation:fade .2s}
+.ov[hidden]{display:none}
+@keyframes fade{from{opacity:0}}
+.panel{
+  width:100%;max-width:720px;border-radius:18px;padding:18px;display:grid;gap:14px;
+  background:linear-gradient(180deg,#2a171b,#140a0c);box-shadow:0 0 0 2px var(--gold-d), 0 0 0 5px #000, 0 30px 80px rgba(0,0,0,.7);
+}
+.panel h2{margin:0;font:400 clamp(22px,5vw,30px)/1.1 var(--f-title);color:var(--gold);text-transform:uppercase;letter-spacing:.04em}
+.ptable{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.prow{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center;padding:8px;border-radius:10px;background:rgba(0,0,0,.35)}
+.prow .ic{width:56px;height:56px;border-radius:8px;background:var(--reel);display:grid;place-items:center}
+.prow .ic svg{width:86%;height:86%}
+.prow ul{list-style:none;margin:0;padding:0;font:400 15px/1.35 var(--f-led);color:var(--led)}
+.prow ul li span{color:var(--dim);margin-right:6px}
+.rules{margin:0;padding-left:18px;display:grid;gap:4px;color:var(--dim);font-size:14px}
+.rules b{color:var(--text)}
+.minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.mini{display:grid;gap:3px;justify-items:center;font:400 12px var(--f-led);color:var(--dim)}
+.mini svg{width:100%;height:auto;background:#0a0a0a;border-radius:4px}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+
+/* gamble */
+.gamble{max-width:520px;text-align:center;justify-items:center}
+.bank{font:400 clamp(30px,8vw,44px)/1 var(--f-led);color:var(--led-green);text-shadow:0 0 12px rgba(92,255,138,.5)}
+.bank small{display:block;font:600 11px var(--f-ui);letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-shadow:none;margin-bottom:4px}
+.card{width:120px;height:168px;perspective:800px}
+.card .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s}
+.card.flip .in{transform:rotateY(180deg)}
+.card .face,.card .back{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 8px 20px rgba(0,0,0,.6)}
+.card .back{background:repeating-linear-gradient(45deg,#8a0f1a 0 8px,#5a0710 8px 16px);border:6px solid #f4ead8}
+.card .face{transform:rotateY(180deg);background:#fbf7ee;display:grid;place-items:center;font:400 72px/1 Georgia,"Times New Roman",serif}
+.card .face.r{color:#c4141e}
+.card .face.k{color:#111}
+.card .face small{position:absolute;left:10px;top:8px;font:700 22px/1 Georgia,serif}
+.hist{display:flex;gap:6px;min-height:42px}
+.hist span{width:30px;height:42px;border-radius:5px;background:#fbf7ee;display:grid;place-items:center;font:20px Georgia,serif}
+.hist .r{color:#c4141e}.hist .k{color:#111}
+.gbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.gbtns .cap{min-height:58px;font-size:16px}
+.gbtns .cap.k{--cap:#2b2b33}
+
+/* big win */
+.big{position:fixed;inset:0;z-index:45;display:grid;place-items:center;pointer-events:none}
+.big[hidden]{display:none}
+.big div{width:min(92vw,900px);text-align:center;animation:bigin .5s cubic-bezier(.2,1.5,.4,1)}
+.big h3{margin:0;font:400 clamp(30px,7.5vw,72px)/1.05 var(--f-title);text-wrap:balance;text-transform:uppercase;
+  background:linear-gradient(180deg,#fff7d0,var(--gold) 50%,var(--gold-d));-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 4px 0 #5a0a10) drop-shadow(0 0 30px rgba(255,190,60,.6))}
+.big b{display:block;margin-top:10px;font:400 clamp(32px,9vw,72px)/1 var(--f-led);color:var(--led-green);text-shadow:0 0 18px rgba(92,255,138,.7)}
+@keyframes bigin{from{transform:scale(.3);opacity:0}}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:44}
+
+@media (prefers-reduced-motion: reduce){
+  .bulbs i,.cell.win svg,.cell.win::before,.cap.blink{animation:none}
+  .card .in{transition:none}
+}
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="grad-Red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a5a"/><stop offset=".5" stop-color="#e01020"/><stop offset="1" stop-color="#8a0010"/></linearGradient>
+    <linearGradient id="grad-Gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#ffcc33"/><stop offset="1" stop-color="#c47a00"/></linearGradient>
+    <radialGradient id="grad-Cherry" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#ff8a8a"/><stop offset=".5" stop-color="#d4101e"/><stop offset="1" stop-color="#6a0008"/></radialGradient>
+    <radialGradient id="grad-Lemon" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fffbd0"/><stop offset=".55" stop-color="#ffe02a"/><stop offset="1" stop-color="#c49a00"/></radialGradient>
+    <radialGradient id="grad-Orange" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#ffd8a0"/><stop offset=".55" stop-color="#ff8c1a"/><stop offset="1" stop-color="#b44a00"/></radialGradient>
+    <radialGradient id="grad-Plum" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#d8a0ff"/><stop offset=".55" stop-color="#7a2ab8"/><stop offset="1" stop-color="#2e0a52"/></radialGradient>
+    <radialGradient id="grad-Grape" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#b8c0ff"/><stop offset=".55" stop-color="#4a3ab8"/><stop offset="1" stop-color="#1a1052"/></radialGradient>
+    <linearGradient id="grad-Leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8be36a"/><stop offset="1" stop-color="#1e7a2a"/></linearGradient>
+    <linearGradient id="grad-Bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a52"/><stop offset=".5" stop-color="#111"/><stop offset="1" stop-color="#000"/></linearGradient>
+    <linearGradient id="grad-Wild" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4ad0"/><stop offset=".33" stop-color="#ffd03a"/><stop offset=".66" stop-color="#3ae0ff"/><stop offset="1" stop-color="#7a4aff"/></linearGradient>
+    <radialGradient id="grad-Star" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#e0f4ff"/><stop offset=".5" stop-color="#3a9aff"/><stop offset="1" stop-color="#0a3a9a"/></radialGradient>
+
+    <symbol id="s-seven" viewBox="0 0 100 100"><path d="M18 14h66v14L50 90H30l32-58H18z" fill="url(#grad-Red)" stroke="#5a0008" stroke-width="4" stroke-linejoin="round"/><path d="M24 19h52" stroke="#ffb0a8" stroke-width="3" stroke-linecap="round" opacity=".8"/></symbol>
+    <symbol id="s-bar" viewBox="0 0 100 100"><g stroke="#ffcc33" stroke-width="2.5"><rect x="10" y="14" width="80" height="20" rx="4" fill="url(#grad-Bar)"/><rect x="10" y="40" width="80" height="20" rx="4" fill="url(#grad-Bar)"/><rect x="10" y="66" width="80" height="20" rx="4" fill="url(#grad-Bar)"/></g><g font-family="Russo One, Arial Black, sans-serif" font-size="15" fill="#fff" text-anchor="middle"><text x="50" y="29.5">BAR</text><text x="50" y="55.5">BAR</text><text x="50" y="81.5">BAR</text></g></symbol>
+    <symbol id="s-bell" viewBox="0 0 100 100"><path d="M50 10c5 0 6 4 6 6 15 4 22 18 22 34 0 12 4 18 12 24H10c8-6 12-12 12-24 0-16 7-30 22-34 0-2 1-6 6-6z" fill="url(#grad-Gold)" stroke="#7a4a00" stroke-width="3.5" stroke-linejoin="round"/><circle cx="50" cy="83" r="8" fill="url(#grad-Gold)" stroke="#7a4a00" stroke-width="3"/><path d="M34 34c-4 8-5 18-5 26" stroke="#fff8d0" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/></symbol>
+    <symbol id="s-cherry" viewBox="0 0 100 100"><path d="M34 62C40 40 52 22 72 12M66 66C64 44 66 26 72 12" stroke="#3a6a1a" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M72 12c8-2 16 2 18 10-8 2-15-2-18-10z" fill="url(#grad-Leaf)" stroke="#1e5a1a" stroke-width="2"/><circle cx="32" cy="70" r="18" fill="url(#grad-Cherry)" stroke="#5a0008" stroke-width="3"/><circle cx="66" cy="72" r="18" fill="url(#grad-Cherry)" stroke="#5a0008" stroke-width="3"/><circle cx="26" cy="64" r="4" fill="#fff" opacity=".7"/><circle cx="60" cy="66" r="4" fill="#fff" opacity=".7"/></symbol>
+    <symbol id="s-lemon" viewBox="0 0 100 100"><path d="M8 52c6-22 26-34 44-34s36 10 40 30c2 4 2 8 0 10-6 18-24 28-42 28S14 76 10 60c-3-2-4-5-2-8z" fill="url(#grad-Lemon)" stroke="#8a6a00" stroke-width="3.5"/><path d="M28 40c6-6 14-9 22-9" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".7"/></symbol>
+    <symbol id="s-orange" viewBox="0 0 100 100"><circle cx="50" cy="56" r="34" fill="url(#grad-Orange)" stroke="#7a3000" stroke-width="3.5"/><g fill="#b44a00" opacity=".35"><circle cx="40" cy="66" r="1.6"/><circle cx="58" cy="72" r="1.6"/><circle cx="66" cy="58" r="1.6"/><circle cx="48" cy="78" r="1.6"/><circle cx="70" cy="44" r="1.6"/></g><path d="M50 22c2-6 8-10 16-10-1 8-8 12-16 10z" fill="url(#grad-Leaf)" stroke="#1e5a1a" stroke-width="2"/><circle cx="38" cy="44" r="6" fill="#fff" opacity=".55"/></symbol>
+    <symbol id="s-plum" viewBox="0 0 100 100"><ellipse cx="50" cy="58" rx="32" ry="30" fill="url(#grad-Plum)" stroke="#1e0638" stroke-width="3.5"/><path d="M50 30c-2 10-2 30 0 56" stroke="#1e0638" stroke-width="2" opacity=".5" fill="none"/><path d="M50 30c4-10 12-16 24-16-2 10-12 16-24 16z" fill="url(#grad-Leaf)" stroke="#1e5a1a" stroke-width="2"/><ellipse cx="36" cy="46" rx="7" ry="10" fill="#fff" opacity=".4"/></symbol>
+    <symbol id="s-grapes" viewBox="0 0 100 100"><path d="M50 18c0-6 4-10 10-10" stroke="#5a3a10" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M54 16c10-6 24-2 28 8-12 4-22 0-28-8z" fill="url(#grad-Leaf)" stroke="#1e5a1a" stroke-width="2"/><g fill="url(#grad-Grape)" stroke="#120838" stroke-width="2.5"><circle cx="34" cy="32" r="11"/><circle cx="56" cy="30" r="11"/><circle cx="72" cy="38" r="10"/><circle cx="24" cy="50" r="10"/><circle cx="44" cy="50" r="11"/><circle cx="64" cy="54" r="11"/><circle cx="34" cy="68" r="11"/><circle cx="54" cy="72" r="11"/><circle cx="44" cy="88" r="9"/></g><g fill="#fff" opacity=".5"><circle cx="30" cy="28" r="3"/><circle cx="40" cy="46" r="3"/><circle cx="60" cy="50" r="3"/><circle cx="30" cy="64" r="3"/></g></symbol>
+    <symbol id="s-melon" viewBox="0 0 100 100"><path d="M8 36h84c0 28-19 50-42 50S8 64 8 36z" fill="#1f8a2e" stroke="#0e4a16" stroke-width="3.5"/><path d="M15 36h70c0 22-15 42-35 42S15 58 15 36z" fill="#e8f5d0"/><path d="M19 36h62c0 19-13 37-31 37S19 55 19 36z" fill="#ff3a4a"/><g fill="#1a1a1a"><ellipse cx="36" cy="48" rx="2.2" ry="3.4"/><ellipse cx="50" cy="56" rx="2.2" ry="3.4"/><ellipse cx="64" cy="48" rx="2.2" ry="3.4"/><ellipse cx="44" cy="64" rx="2.2" ry="3.4"/><ellipse cx="57" cy="66" rx="2.2" ry="3.4"/></g><path d="M8 36h84" stroke="#ff8a90" stroke-width="3"/></symbol>
+    <symbol id="s-wild" viewBox="0 0 100 100"><path d="M50 4l12 18 21-4-4 21 18 11-18 11 4 21-21-4-12 18-12-18-21 4 4-21L3 50l18-11-4-21 21 4z" fill="url(#grad-Wild)" stroke="#2a0a4a" stroke-width="3" stroke-linejoin="round"/><circle cx="50" cy="50" r="27" fill="#1a0a2e" stroke="#fff" stroke-width="2.5"/><text x="50" y="57" text-anchor="middle" font-family="Russo One, Arial Black, sans-serif" font-size="20" fill="url(#grad-Gold)" stroke="#5a2a00" stroke-width=".8">WILD</text></symbol>
+    <symbol id="s-star" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#3a9aff" stroke-width="2" opacity=".5"/><path d="M50 8l11 28 30 2-23 19 8 29-26-16-26 16 8-29L9 38l30-2z" fill="url(#grad-Star)" stroke="#0a2a6a" stroke-width="3.5" stroke-linejoin="round"/><path d="M50 22l5 14" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/><text x="50" y="66" text-anchor="middle" font-family="Russo One, Arial Black, sans-serif" font-size="13" fill="#fff" stroke="#0a2a6a" stroke-width=".6">BONUS</text></symbol>
+  </defs>
+</svg>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <div class="cabinet">
+    <header class="marquee">
+      <div class="bulbs" id="bulbs" aria-hidden="true"></div>
+      <h1>Золотой Экспресс</h1>
+      <p>5 барабанов · 20 линий · бонусные вращения</p>
+    </header>
+
+    <section class="screen" aria-label="Барабаны">
+      <div class="tabs" id="tabsL"></div>
+      <div class="reels" id="reels">
+        <svg class="lines" id="lines" viewBox="0 0 500 300" preserveAspectRatio="none" aria-hidden="true"></svg>
+      </div>
+      <div class="tabs" id="tabsR"></div>
+    </section>
+
+    <div class="msg" id="msg" role="status" aria-live="polite">Удачи! Пробел — вращение</div>
+
+    <section class="bar" aria-label="Панель управления">
+      <div class="leds">
+        <div class="led"><span>Кредит</span><b id="dCredit">0</b></div>
+        <div class="led"><span>Ставка</span><b id="dTotal">0</b></div>
+        <div class="led win" id="ledWin"><span>Выигрыш</span><b id="dWin">0</b></div>
+        <div class="led hide-sm"><span>Линии</span><b id="dLines">20</b></div>
+        <div class="led hide-sm"><span>На линию</span><b id="dBet">1</b></div>
+      </div>
+      <div class="btns">
+        <button class="cap blue" id="bPay" type="button">Таблица<br>выплат</button>
+        <div class="grp" role="group" aria-label="Линии">
+          <button class="cap grey sm" id="linesDn" type="button" aria-label="Меньше линий">−</button>
+          <span class="lbl">Линии<br><b id="lLines">20</b></span>
+          <button class="cap grey sm" id="linesUp" type="button" aria-label="Больше линий">+</button>
+        </div>
+        <div class="grp" role="group" aria-label="Ставка на линию">
+          <button class="cap grey sm" id="betDn" type="button" aria-label="Уменьшить ставку">−</button>
+          <span class="lbl">На линию<br><b id="lBet">1</b></span>
+          <button class="cap grey sm" id="betUp" type="button" aria-label="Увеличить ставку">+</button>
+        </div>
+        <button class="cap amber" id="bMax" type="button">Макс.<br>ставка</button>
+        <button class="cap blue" id="bAuto" type="button" aria-pressed="false">Авто</button>
+        <button class="cap red" id="bGamble" type="button" disabled>Риск</button>
+        <button class="cap amber" id="bTake" type="button" disabled>Забрать</button>
+        <button class="cap spin" id="bSpin" type="button">Спин</button>
+      </div>
+    </section>
+    <p class="foot"><span id="footText">Только игровые кредиты, реальные деньги не используются.</span> <button class="cap grey" id="bRefill" type="button" hidden style="min-height:36px;margin-left:8px">Пополнить +1000</button></p>
+  </div>
+</div>
+
+<div class="ov" id="ovPay" hidden role="dialog" aria-modal="true" aria-labelledby="payTitle">
+  <div class="panel">
+    <h2 id="payTitle">Таблица выплат</h2>
+    <p class="dim" style="margin:0;color:var(--dim)">Выплаты указаны в кредитах за 1 кредит на линию. Комбинации считаются слева направо по активным линиям.</p>
+    <div class="ptable" id="ptable"></div>
+    <ol class="rules">
+      <li><b>WILD</b> заменяет любой символ, кроме BONUS. Пять WILD на линии — главный приз.</li>
+      <li><b>BONUS</b> платит в любом месте экрана от общей ставки: 3 — ×2, 4 — ×10, 5 — ×50, и даёт <b>10 бесплатных вращений</b> с удвоенными выигрышами.</li>
+      <li>На линии платит только самая дорогая комбинация. Выигрыши разных линий складываются.</li>
+      <li><b>Риск:</b> угадайте цвет карты и удвойте выигрыш, до 5 раз подряд.</li>
+    </ol>
+    <h2 style="font-size:18px">Линии</h2>
+    <div class="minis" id="minis"></div>
+    <div class="row"><button class="cap green" type="button" data-close>Назад к игре</button></div>
+  </div>
+</div>
+
+<div class="ov" id="ovGamble" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
+  <div class="panel gamble">
+    <h2 id="gTitle">Риск</h2>
+    <div class="bank"><small>На кону</small><span id="gBank">0</span></div>
+    <div class="card" id="gCard"><div class="in"><div class="back"></div><div class="face" id="gFace"></div></div></div>
+    <div class="hist" id="gHist" aria-label="Последние карты"></div>
+    <p id="gMsg" style="margin:0;color:var(--dim)">Красная или чёрная? Угадаете — выигрыш удвоится.</p>
+    <div class="gbtns">
+      <button class="cap red" id="gRed" type="button">Красная</button>
+      <button class="cap k" id="gBlack" type="button">Чёрная</button>
+    </div>
+    <button class="cap amber" id="gTake" type="button" style="width:100%">Забрать</button>
+  </div>
+</div>
+
+<div class="big" id="big" hidden aria-hidden="true"><div><h3 id="bigTitle">Большой выигрыш</h3><b id="bigAmt">0</b></div></div>
+
+<script type="module">
+import * as Rules from './rules.js?v=1';
+
+const { PAY, SCAT, LINES, BETS, STRIPS, FREE_MULT, GAMBLE_MAX, MAX_LINES, visible } = Rules;
+const $ = s => document.querySelector(s);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt = n => Math.floor(n).toLocaleString('ru-RU');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const rand = n => Math.floor(Math.random() * n);
+
+const NAMES = { seven: 'Семёрка', bar: 'BAR', bell: 'Колокол', melon: 'Арбуз', grapes: 'Виноград', plum: 'Слива', orange: 'Апельсин', lemon: 'Лимон', cherry: 'Вишня', wild: 'WILD', star: 'BONUS' };
+const LCOL = ['#ff3b3b','#ffd23b','#3bff6e','#3bb8ff','#ff3bd8','#ff8a3b','#b03bff','#3bffe1','#ff3b8a','#c8ff3b','#3b6bff','#ffb83b','#3bff3b','#ff5e9e','#8affd8','#ffe08a','#9e8aff','#ff9e5e','#5effa8','#e05eff'];
+
+/* ---------- state ---------- */
+// credit: what can be bet now; the last win waits in pending until it is taken or risked
+const S = { credit: 1000, lines: MAX_LINES, betIdx: 0 };
+let pending = 0, spinning = false, playing = false, auto = false, free = 0, freeTotal = 0, gambleCount = 0, lastGrid = null, cycleTimer = null;
+const bet = () => BETS[S.betIdx];
+const totalBet = () => S.lines * bet();
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('golden.state') || 'null');
+    if (!d) return;
+    if (typeof d.credit === 'number') S.credit = d.credit;
+    if (d.lines >= 1 && d.lines <= MAX_LINES) S.lines = d.lines;
+    if (d.betIdx >= 0 && d.betIdx < BETS.length) S.betIdx = d.betIdx;
+  } catch (e) {}
+}
+// Online the credits are the server's: nothing is kept in the browser
+function save() { if (net) return; try { localStorage.setItem('golden.state', JSON.stringify(S)); } catch (e) {} }
+
+/* ---------- online: the server spins and keeps the credits ---------- */
+// The page only shows what the server decided. The server address comes from the page link (?api=host).
+let tg = null, net = null;   // net: { host, token, sid, least, dead }; least is the smallest bet of a spin
+
+async function loadTelegram() {
+  if (!/tgWebAppData/.test(location.hash)) return null;
+  await new Promise(done => {
+    const s = document.createElement('script');
+    s.src = 'https://telegram.org/js/telegram-web-app.js';
+    s.onload = s.onerror = done;
+    document.head.append(s);
+  });
+  return window.Telegram?.WebApp || null;
+}
+async function call(route, body = {}) {
+  try {
+    const res = await fetch(`https://${net.host}/golden/api/${route}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ game: net.token, sid: net.sid, ...body }),
+      referrerPolicy: 'no-referrer',
+    });
+    return await res.json();
+  } catch (e) {
+    return { error: 'Нет связи с сервером игры' };
+  }
+}
+// Taken over by the game opened in another window: this one stops
+function lost() {
+  net.dead = true; stopAuto();
+  setMsg('Игра открыта в другом окне — здесь она остановлена', 'bad');
+  renderLeds();
+}
+// The server takes no spin below its smallest bet: the bet goes up to the nearest one it takes,
+// with more lines of two equal ones
+function fitBet() {
+  if (!net || totalBet() >= net.least) return false;
+  let best = { lines: MAX_LINES, betIdx: BETS.length - 1 };
+  for (let l = MAX_LINES; l >= 1; l--) {
+    const i = BETS.findIndex(b => b * l >= net.least);
+    if (i >= 0 && l * BETS[i] < best.lines * BETS[best.betIdx]) best = { lines: l, betIdx: i };
+  }
+  S.lines = best.lines; S.betIdx = best.betIdx;
+  return true;
+}
+// One paid spin and its free spins: { spins: [{ stops, win, more }], win }, or null if there is none
+async function getRound() {
+  if (!net) {
+    S.credit -= totalBet(); shownCredit = S.credit; save();
+    return Rules.playRound(S.lines, bet(), rand);
+  }
+  shownCredit = S.credit - totalBet(); renderLeds();
+  const r = await call('spin', { lines: S.lines, bet: bet() });
+  if (r.closed) { shownCredit = S.credit; lost(); return null; }
+  if (typeof r.least === 'number') net.least = r.least;
+  if (r.error || !r.spins) {
+    if (typeof r.balance === 'number') S.credit = r.balance;
+    shownCredit = S.credit; stopAuto();
+    setMsg(r.error || 'Сервер игры не ответил', 'bad');
+    return null;
+  }
+  // The balance has the whole round's win in it already, the reels show it spin by spin
+  S.credit = r.balance - r.win; shownCredit = S.credit;
+  return r;
+}
+
+/* ---------- audio ---------- */
+let ac = null;
+function audio() { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); return ac; } catch (e) { return null; } }
+function tone(f, t, d, type = 'square', v = .05, f2) {
+  const a = audio(); if (!a) return;
+  const o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + t;
+  o.type = type; o.frequency.setValueAtTime(f, t0); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + d);
+  g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d);
+  o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + d + .02);
+}
+const sTick = () => tone(1800, 0, .015, 'square', .012);
+const sStop = i => { tone(120 + i * 8, 0, .12, 'triangle', .14, 60); tone(900, 0, .02, 'square', .02); };
+const sBtn = () => tone(700, 0, .04, 'square', .03);
+const sWin = big => { const n = big ? [523, 659, 784, 1047, 1319, 1568] : [784, 988, 1175]; n.forEach((f, i) => tone(f, i * .08, .18, 'square', .045)); };
+const sCount = () => tone(1400 + Math.random() * 300, 0, .03, 'square', .02);
+const sLose = () => { tone(220, 0, .25, 'sawtooth', .05, 110); };
+const sBonus = () => [523, 784, 1047, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, i * .1, .2, 'triangle', .07));
+let tickTimer = null;
+function ticking(on) { clearInterval(tickTimer); if (on) tickTimer = setInterval(sTick, 70); }
+
+/* ---------- build UI ---------- */
+const reelsEl = $('#reels');
+const symSvg = s => `<svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-${s}"/></svg>`;
+const reels = [];
+for (let i = 0; i < 5; i++) {
+  const r = document.createElement('div'); r.className = 'reel';
+  const st = document.createElement('div'); st.className = 'strip';
+  r.append(st); reelsEl.insertBefore(r, $('#lines'));
+  reels.push({ el: r, strip: st, pos: rand(STRIPS[i].length) });
+}
+function setStrip(i, syms, offsetIdx) {
+  const R = reels[i];
+  R.strip.style.height = (syms.length / 3 * 100) + '%';
+  R.strip.innerHTML = syms.map(s => `<div class="cell" data-s="${s}" style="height:${100 / syms.length}%">${symSvg(s)}</div>`).join('');
+  R.strip.style.transition = 'none';
+  R.strip.style.transform = `translateY(${-offsetIdx / syms.length * 100}%)`;
+}
+function initReels() {
+  for (let i = 0; i < 5; i++) { const v = visible(i, reels[i].pos); const pre = STRIPS[i][(reels[i].pos - 1 + STRIPS[i].length) % STRIPS[i].length]; setStrip(i, [pre, ...v], 1); }
+  lastGrid = reels.map((R, i) => visible(i, R.pos));
+}
+const bulbs = $('#bulbs');
+(function () {
+  const n = 22; let html = '';
+  for (let i = 0; i < n; i++) { const x = (i + .5) / n * 100; html += `<i style="left:calc(${x}% - 4px);top:-2px;animation-delay:${(i % 2) * .6}s"></i><i style="left:calc(${x}% - 4px);bottom:-2px;animation-delay:${((i + 1) % 2) * .6}s"></i>`; }
+  bulbs.innerHTML = html;
+})();
+function buildTabs() {
+  const tab = i => `<button type="button" class="tab" data-l="${i}" style="--c:${LCOL[i]}" aria-label="Линия ${i + 1}">${i + 1}</button>`;
+  $('#tabsL').innerHTML = Array.from({ length: 10 }, (_, k) => tab(k * 2)).join('');
+  $('#tabsR').innerHTML = Array.from({ length: 10 }, (_, k) => tab(k * 2 + 1)).join('');
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('mouseenter', () => { if (!spinning) drawLines([+t.dataset.l]); });
+    t.addEventListener('mouseleave', () => { if (!spinning && !cycleTimer) drawLines([]); });
+    t.addEventListener('click', () => { if (playing || free > 0) return; S.lines = +t.dataset.l + 1; sBtn(); afterBetChange(); });
+  });
+}
+function linePoints(li) {
+  const off = ((li % 7) - 3) * 3.5;
+  return LINES[li].map((r, c) => `${50 + c * 100},${50 + r * 100 + off}`).join(' ');
+}
+function drawLines(list) {
+  $('#lines').innerHTML = list.map(li => `<polyline points="${linePoints(li)}" stroke="${LCOL[li]}"/>`).join('');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hot', list.includes(+t.dataset.l)));
+}
+function buildPaytable() {
+  const order = ['wild', 'seven', 'bar', 'bell', 'melon', 'grapes', 'plum', 'orange', 'lemon', 'cherry', 'star'];
+  $('#ptable').innerHTML = order.map(s => {
+    let rows;
+    if (s === 'star') rows = [5, 4, 3].map(n => `<li><span>${n}×</span>×${SCAT[n]} ставки</li>`).join('');
+    else rows = [5, 4, 3, 2].filter(n => PAY[s][n - 1]).map(n => `<li><span>${n}×</span>${PAY[s][n - 1]}</li>`).join('');
+    return `<div class="prow"><div class="ic">${symSvg(s)}</div><div><b style="font-size:13px">${NAMES[s]}</b><ul>${rows}</ul></div></div>`;
+  }).join('');
+  $('#minis').innerHTML = LINES.map((L, i) => `<div class="mini"><svg viewBox="0 0 50 30">${[0, 1, 2].map(r => [0, 1, 2, 3, 4].map(c => `<rect x="${c * 10 + 1}" y="${r * 10 + 1}" width="8" height="8" rx="1" fill="${L[c] === r ? LCOL[i] : '#2a2a2a'}"/>`).join('')).join('')}</svg>${i + 1}</div>`).join('');
+}
+
+/* ---------- display ---------- */
+let shownCredit = 0;
+function renderLeds() {
+  $('#dCredit').textContent = fmt(shownCredit);
+  $('#dTotal').textContent = fmt(totalBet());
+  $('#dWin').textContent = fmt(pending);
+  $('#dLines').textContent = S.lines; $('#lLines').textContent = S.lines;
+  $('#dBet').textContent = fmt(bet()); $('#lBet').textContent = fmt(bet());
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', +t.dataset.l < S.lines));
+  const busy = playing || free > 0, least = net ? net.least : 0;
+  $('#linesDn').disabled = busy || S.lines <= 1 || (S.lines - 1) * bet() < least; $('#linesUp').disabled = busy || S.lines >= MAX_LINES;
+  $('#betDn').disabled = busy || S.betIdx <= 0 || S.lines * BETS[S.betIdx - 1] < least; $('#betUp').disabled = busy || S.betIdx >= BETS.length - 1;
+  $('#bMax').disabled = busy;
+  $('#bGamble').disabled = busy || pending <= 0 || auto;
+  $('#bTake').disabled = busy || pending <= 0;
+  $('#bGamble').classList.toggle('blink', pending > 0 && !busy && !auto);
+  const sp = $('#bSpin');
+  sp.classList.toggle('stop', spinning || auto);
+  sp.textContent = spinning ? 'Стоп' : auto ? 'Стоп авто' : free > 0 ? 'Бонус' : 'Спин';
+  $('#bRefill').hidden = !!net || !(S.credit + pending < BETS[0] && !playing && free === 0);
+}
+function setMsg(t, cls = '') { const m = $('#msg'); m.textContent = t; m.className = 'msg ' + cls; }
+function countCredit(target, ms = 600) {
+  return new Promise(res => {
+    const from = shownCredit, t0 = performance.now(), d = RM ? 1 : ms; let last = 0;
+    const step = t => {
+      const k = Math.min(1, (t - t0) / d);
+      shownCredit = Math.round(from + (target - from) * k); renderLeds();
+      if (t - last > 60 && k < 1 && target > from) { sCount(); last = t; }
+      if (k < 1) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ---------- bet controls ---------- */
+function afterBetChange() { save(); renderLeds(); drawLines(Array.from({ length: S.lines }, (_, i) => i)); clearTimeout(afterBetChange.h); afterBetChange.h = setTimeout(() => { if (!spinning && !cycleTimer) drawLines([]); }, 1100); setMsg(`Линий: ${S.lines} · на линию: ${fmt(bet())} · ставка: ${fmt(totalBet())}`); }
+$('#linesDn').onclick = () => { S.lines = Math.max(1, S.lines - 1); sBtn(); afterBetChange(); };
+$('#linesUp').onclick = () => { S.lines = Math.min(MAX_LINES, S.lines + 1); sBtn(); afterBetChange(); };
+$('#betDn').onclick = () => { S.betIdx = Math.max(0, S.betIdx - 1); sBtn(); afterBetChange(); };
+$('#betUp').onclick = () => { S.betIdx = Math.min(BETS.length - 1, S.betIdx + 1); sBtn(); afterBetChange(); };
+$('#bMax').onclick = async () => {
+  if (playing) return;
+  await collect();
+  S.lines = MAX_LINES; let i = BETS.length - 1; while (i > 0 && BETS[i] * MAX_LINES > S.credit) i--; S.betIdx = i;
+  sBtn(); afterBetChange(); spin();
+};
+
+/* ---------- spin ---------- */
+function clearWins() {
+  clearInterval(cycleTimer); cycleTimer = null;
+  document.querySelectorAll('.cell.win, .cell.dim').forEach(c => c.classList.remove('win', 'dim'));
+  drawLines([]);
+}
+async function collect() {
+  if (pending <= 0) return;
+  const amt = pending; pending = 0; S.credit += amt; save();
+  await countCredit(S.credit, Math.min(1200, 300 + amt * 2));
+  renderLeds();
+}
+function stopAuto() { auto = false; $('#bAuto').setAttribute('aria-pressed', 'false'); renderLeds(); }
+async function spin() {
+  audio();
+  if (spinning) { reels.forEach(R => R.slam && R.slam()); return; }
+  if (playing || !$('#ovGamble').hidden || !$('#ovPay').hidden) return;
+  if (net?.dead) return lost();
+  playing = true;
+  try {
+    clearWins();
+    await collect();
+    const raised = fitBet();
+    if (S.credit < totalBet()) {
+      stopAuto();
+      setMsg(net ? 'Не хватает кредитов на ставку' : S.credit < BETS[0] ? 'Кредиты закончились. Нажмите «Пополнить».' : 'Недостаточно кредитов, уменьшите ставку', 'bad');
+      return;
+    }
+    setMsg(raised ? `Ставка поднята до минимальной: ${fmt(totalBet())}` : 'Удачи!');
+    gambleCount = 0; spinning = true; renderLeds();
+    const round = await getRound();
+    spinning = false;
+    if (!round) return;
+    for (let k = 0; k < round.spins.length; k++) {
+      const isFree = k > 0;
+      if (isFree) { free--; setMsg(`Бесплатное вращение · осталось ${free} · выигрыш ×${FREE_MULT}`, 'good'); }
+      await roll(round.spins[k].stops, auto && !isFree);
+      await settle(round.spins[k], isFree);
+      if (free > 0) await sleep(RM ? 300 : 1100);
+    }
+    if (round.spins.length > 1) {
+      setMsg(`Бонус окончен · итог ${fmt(freeTotal)}`, 'good');
+      freeTotal = 0; updateFsBadge();
+      await sleep(900);
+    }
+  } finally {
+    playing = false; spinning = false; ticking(false);
+    renderLeds();
+  }
+  if (auto) {
+    await sleep(pending ? 900 : 350);
+    if (auto && !playing) spin();
+  }
+}
+// The reels run and stop at stops, the top row of each
+async function roll(stops, turbo) {
+  spinning = true; renderLeds();
+  ticking(true);
+  const results = reels.map((R, i) => {
+    const len = STRIPS[i].length, newPos = stops[i];
+    const fin = visible(i, newPos), prev = visible(i, R.pos);
+    const pre = STRIPS[i][(newPos - 1 + len) % len];
+    const F = (turbo ? 8 : 14) + i * (turbo ? 3 : 5);
+    const filler = Array.from({ length: F }, (_, k) => STRIPS[i][(newPos + 3 + k) % len]);
+    const syms = [pre, ...fin, ...filler, ...prev];
+    setStrip(i, syms, 1 + 3 + F);
+    R.pos = newPos;
+    return { fin, syms };
+  });
+  void reelsEl.offsetWidth;
+  const stopsDone = reels.map((R, i) => new Promise(res => {
+    const dur = (RM ? 300 : (turbo ? 520 : 900)) + i * (turbo ? 130 : 230);
+    const st = R.strip;
+    R.el.classList.add('spin');
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      R.el.classList.remove('spin'); st.style.transition = 'none'; st.style.transform = `translateY(${-1 / results[i].syms.length * 100}%)`;
+      sStop(i); R.slam = null; res();
+    };
+    st.addEventListener('transitionend', finish, { once: true });
+    st.style.transition = `transform ${dur}ms cubic-bezier(.32,.06,.24,1.06)`;
+    st.style.transform = `translateY(${-1 / results[i].syms.length * 100}%)`;
+    const blurOff = setTimeout(() => R.el.classList.remove('spin'), dur - 220);
+    const safety = setTimeout(finish, dur + 400);
+    R.slam = () => {
+      const m = new DOMMatrixReadOnly(getComputedStyle(st).transform);
+      st.style.transition = 'none'; st.style.transform = `translateY(${m.m42}px)`; void st.offsetWidth;
+      st.style.transition = `transform 160ms ease-out`; st.style.transform = `translateY(${-1 / results[i].syms.length * 100}%)`;
+      clearTimeout(blurOff); clearTimeout(safety); setTimeout(finish, 220);
+    };
+  }));
+  for (const p of stopsDone) await p;
+  ticking(false);
+  spinning = false;
+  lastGrid = results.map(r => r.fin);
+}
+
+function cellsOf(c) { return [...reels[c].strip.children].slice(1, 4); }
+// One stopped spin: sp.win is what it paid, sp.more the free spins it gave
+async function settle(sp, isFree) {
+  const res = Rules.evalGrid(lastGrid, S.lines, bet());
+  const mult = isFree ? FREE_MULT : 1;
+  const win = sp.win;
+  const winLines = res.wins.map(w => w.line);
+  const triggered = sp.more;
+  free += triggered;
+  if (res.wins.length || res.scWin) {
+    res.wins.forEach(w => LINES[w.line].slice(0, w.cnt).forEach((r, c) => { const el = cellsOf(c)[r]; el.classList.add('win'); el.style.setProperty('--lc', LCOL[w.line]); }));
+    if (res.sc >= 3) res.scPos.forEach(([c, r]) => { const el = cellsOf(c)[r]; el.classList.add('win'); el.style.setProperty('--lc', '#3a9aff'); });
+    drawLines(winLines);
+  }
+  if (win > 0) {
+    pending += win;
+    if (isFree) freeTotal += win;
+    const bigWin = win >= totalBet() * 20;
+    sWin(bigWin);
+    const led = $('#ledWin'); led.classList.remove('flash'); void led.offsetWidth; led.classList.add('flash');
+    setMsg(`Выигрыш ${fmt(win)}${isFree ? ` (×${FREE_MULT})` : ''} · линий: ${res.wins.length}${res.scWin ? ' · BONUS' : ''}`, 'good');
+    renderLeds();
+    if (bigWin) await bigShow(win, win >= totalBet() * 60 ? 'Мега-выигрыш' : 'Большой выигрыш');
+    startCycle(res, mult);
+  } else {
+    setMsg(isFree ? `Пусто · осталось ${free} бесплатных` : 'Без выигрыша. Ещё раз?');
+    renderLeds();
+  }
+  if (triggered) {
+    sBonus();
+    await bigShow(triggered, isFree ? 'Ещё бесплатные вращения' : 'Бесплатные вращения', true);
+  }
+  updateFsBadge();
+  renderLeds();
+}
+function startCycle(res, mult) {
+  const items = res.wins.map(w => ({ line: w.line, text: `Линия ${w.line + 1} · ${w.cnt} × ${NAMES[w.sym]} · ${fmt(w.amount * mult)}`, cells: LINES[w.line].slice(0, w.cnt).map((r, c) => [c, r]) }));
+  if (res.scWin) items.push({ line: null, text: `BONUS × ${res.sc} · ${fmt(res.scWin * mult)}`, cells: res.scPos });
+  if (items.length < 2) return;
+  let k = 0;
+  clearInterval(cycleTimer);
+  cycleTimer = setInterval(() => {
+    if (spinning) return clearWins();
+    const it = items[k++ % items.length];
+    for (let c = 0; c < 5; c++) cellsOf(c).forEach((el, r) => {
+      const on = it.cells.some(([cc, rr]) => cc === c && rr === r);
+      el.classList.toggle('win', on); el.classList.toggle('dim', !on);
+      if (on) el.style.setProperty('--lc', it.line == null ? '#3a9aff' : LCOL[it.line]);
+    });
+    drawLines(it.line == null ? [] : [it.line]);
+    setMsg(it.text, 'good');
+  }, RM ? 2000 : 1500);
+}
+function updateFsBadge() {
+  let b = document.querySelector('.fsBadge');
+  if (free > 0 || freeTotal > 0) {
+    if (!b) { b = document.createElement('div'); b.className = 'fsBadge'; $('.screen').append(b); }
+    b.textContent = free > 0 ? `Бесплатные: ${free} · ×${FREE_MULT} · ${fmt(freeTotal)}` : `Бонус: ${fmt(freeTotal)}`;
+  } else if (b) b.remove();
+}
+
+/* ---------- big win ---------- */
+async function bigShow(amount, title, isSpins) {
+  const b = $('#big'); $('#bigTitle').textContent = title;
+  b.hidden = false;
+  if (!RM) coins(isSpins ? 50 : 120);
+  const el = $('#bigAmt'), d = isSpins ? 1 : 1400, t0 = performance.now();
+  await new Promise(res => {
+    const step = t => { const k = Math.min(1, (t - t0) / d); el.textContent = isSpins ? `${amount} вращений` : fmt(amount * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); else res(); };
+    requestAnimationFrame(step);
+  });
+  await sleep(RM ? 600 : 1300);
+  b.hidden = true;
+}
+const cv = $('#fx'), cx = cv.getContext('2d'); let coinParts = [], coinOn = false;
+function coins(n) {
+  const d = Math.min(2, devicePixelRatio || 1); cv.width = innerWidth * d; cv.height = innerHeight * d; cx.setTransform(d, 0, 0, d, 0, 0);
+  for (let i = 0; i < n; i++) coinParts.push({ x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * .45, vx: (Math.random() - .5) * 16, vy: -Math.random() * 16 - 6, r: 6 + Math.random() * 8, a: Math.random() * 6, va: Math.random() * .3 });
+  if (!coinOn) { coinOn = true; requestAnimationFrame(coinTick); }
+}
+function coinTick() {
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  coinParts = coinParts.filter(p => p.y < innerHeight + 30);
+  coinParts.forEach(p => {
+    p.vy += .45; p.x += p.vx; p.y += p.vy; p.a += p.va;
+    const w = Math.abs(Math.cos(p.a)) * p.r;
+    const g = cx.createLinearGradient(p.x - w, p.y, p.x + w, p.y); g.addColorStop(0, '#c47a00'); g.addColorStop(.5, '#fff3b0'); g.addColorStop(1, '#ffcc33');
+    cx.fillStyle = g; cx.beginPath(); cx.ellipse(p.x, p.y, Math.max(1, w), p.r, 0, 0, Math.PI * 2); cx.fill();
+  });
+  if (coinParts.length) requestAnimationFrame(coinTick); else { coinOn = false; cx.clearRect(0, 0, innerWidth, innerHeight); }
+}
+
+/* ---------- gamble ---------- */
+// Suit glyphs in the order of the rules: the first two are red
+const CARD_SUITS = [['♥', 'r'], ['♦', 'r'], ['♣', 'k'], ['♠', 'k']];
+const CARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
+const hist = [];
+function openGamble() {
+  if (pending <= 0 || playing) return;
+  clearWins();
+  $('#gBank').textContent = fmt(pending);
+  $('#gCard').classList.remove('flip');
+  $('#gMsg').textContent = 'Красная или чёрная? Угадаете — выигрыш удвоится.';
+  $('#gRed').disabled = $('#gBlack').disabled = $('#gTake').disabled = false;
+  renderHist();
+  $('#ovGamble').hidden = false; $('#gRed').focus();
+}
+function renderHist() { $('#gHist').innerHTML = hist.slice(-6).map(([s, r, c]) => `<span class="${c}">${s}</span>`).join(''); }
+// The card: from the server online, here otherwise
+async function drawCard(color) {
+  if (!net) {
+    const card = { suit: rand(Rules.SUITS), rank: rand(Rules.RANKS) };
+    return { card, right: Rules.isRed(card.suit) === (color === 'r') };
+  }
+  const r = await call('gamble', { color });
+  if (r.closed) { lost(); return null; }
+  if (r.error || !r.card) {
+    if (typeof r.balance === 'number') { pending = r.pending || 0; S.credit = r.balance - pending; shownCredit = S.credit; }
+    $('#gMsg').textContent = r.error || 'Сервер игры не ответил';
+    return null;
+  }
+  return r;
+}
+async function guess(color) {
+  $('#gRed').disabled = $('#gBlack').disabled = $('#gTake').disabled = true;
+  const r = await drawCard(color);
+  if (!r) { await sleep(1500); return closeGamble(true); }
+  const [suit, c] = CARD_SUITS[r.card.suit], rank = CARD_RANKS[r.card.rank];
+  const face = $('#gFace'); face.className = 'face ' + c; face.innerHTML = `<small>${rank}</small>${suit}`;
+  $('#gCard').classList.add('flip'); tone(500, 0, .08, 'triangle', .05, 900);
+  await sleep(RM ? 100 : 550);
+  hist.push([suit, rank, c]); renderHist();
+  // Online the balance has the result in it: what is not at risk any more is credit
+  const next = net ? r.pending : r.right ? pending * 2 : 0;
+  if (net) { S.credit = r.balance - next; shownCredit = S.credit; }
+  pending = next;
+  if (r.right) {
+    gambleCount++; sWin(false);
+    $('#gBank').textContent = fmt(pending);
+    if (gambleCount >= GAMBLE_MAX) { $('#gMsg').textContent = `${GAMBLE_MAX} удвоений подряд — это предел. Выигрыш забран.`; await sleep(1200); return closeGamble(true); }
+    $('#gMsg').textContent = `Угадали! На кону ${fmt(pending)}. Ещё раз или забрать?`;
+    await sleep(RM ? 200 : 700);
+    $('#gCard').classList.remove('flip');
+    await sleep(RM ? 50 : 350);
+    $('#gRed').disabled = $('#gBlack').disabled = $('#gTake').disabled = false;
+  } else {
+    sLose(); $('#gBank').textContent = '0';
+    $('#gMsg').textContent = 'Не угадали. Выигрыш сгорел.';
+    await sleep(1200); closeGamble(false);
+  }
+  renderLeds();
+}
+async function closeGamble(take) {
+  $('#ovGamble').hidden = true;
+  renderLeds();
+  if (take && pending > 0) { setMsg(`Забрано ${fmt(pending)}`, 'good'); await collect(); }
+  else if (pending === 0) setMsg('Риск не удался. Новая попытка!', 'bad');
+  $('#bSpin').focus();
+}
+$('#gRed').onclick = () => guess('r');
+$('#gBlack').onclick = () => guess('k');
+$('#gTake').onclick = () => closeGamble(true);
+$('#bGamble').onclick = () => { sBtn(); openGamble(); };
+$('#bTake').onclick = async () => { sBtn(); clearWins(); setMsg(`Забрано ${fmt(pending)}`, 'good'); await collect(); };
+
+/* ---------- other buttons ---------- */
+$('#bSpin').onclick = () => {
+  if (auto) { stopAuto(); if (!spinning) return; }
+  if (playing && !spinning) return;
+  spin();
+};
+$('#bAuto').onclick = () => {
+  auto = !auto; $('#bAuto').setAttribute('aria-pressed', String(auto)); sBtn(); renderLeds();
+  if (auto && !playing) spin();
+};
+$('#bPay').onclick = () => { sBtn(); $('#ovPay').hidden = false; $('#ovPay [data-close]').focus(); };
+$('#ovPay').addEventListener('click', e => { if (e.target.id === 'ovPay' || e.target.closest('[data-close]')) { $('#ovPay').hidden = true; $('#bPay').focus(); } });
+$('#bRefill').onclick = () => { if (net) return; S.credit += 1000; shownCredit = S.credit; save(); renderLeds(); setMsg('Начислено 1000 игровых кредитов', 'good'); };
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (!$('#ovPay').hidden) { $('#ovPay').hidden = true; } else if (!$('#ovGamble').hidden && !$('#gTake').disabled) closeGamble(true); return; }
+  if (!$('#ovPay').hidden || !$('#ovGamble').hidden) return;
+  if (e.code === 'Space' || (e.key === 'Enter' && document.activeElement === document.body)) { e.preventDefault(); $('#bSpin').click(); }
+});
+
+/* ---------- boot ---------- */
+function start() {
+  shownCredit = S.credit;
+  buildTabs(); buildPaytable(); initReels(); renderLeds();
+}
+async function boot() {
+  tg = await loadTelegram();
+  tg?.ready(); tg?.expand(); tg?.disableVerticalSwipes?.();
+  tg?.setHeaderColor?.('#0b0507'); tg?.setBackgroundColor?.('#0b0507');
+  const host = new URLSearchParams(location.search).get('api') || '';
+  const token = tg?.initDataUnsafe?.start_param || '';
+  if (tg?.initData && token && /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(host)) {
+    net = { host, token, sid: '', least: 0, dead: false };
+    const r = await call('open', { initData: tg.initData });
+    if (r.sid) {
+      net.sid = r.sid; net.least = r.least; S.credit = r.balance;
+      fitBet(); start();
+      $('#footText').textContent = 'Онлайн-режим: кредиты хранятся на сервере игры.';
+      setMsg(`Минимальная ставка: ${fmt(net.least)} · удачи!`);
+      return;
+    }
+    // No session: the game still runs, on credits of this browser
+    net = null;
+    load(); start();
+    setMsg(r.error || 'Нет связи с сервером игры', 'bad');
+    return;
+  }
+  // No game link or no server address: the game runs here and keeps its credits in this browser
+  load(); start();
+}
+boot();
+</script>
+
+</body>
+</html>
