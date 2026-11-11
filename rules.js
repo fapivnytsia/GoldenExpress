@@ -1,6 +1,6 @@
 // Golden Express rules, shared by the game server and the page: one file, copied as is next to the page.
 // No outside code here: plain numbers and functions, so it runs on the game server and in a browser alike.
-// Returns about 96% of the stakes: free spins included, the gamble is an even bet and changes nothing.
+// Returns about 96% of the stakes: free spins included, the gamble pays back its stake on average and changes nothing.
 
 // Pays for 1..5 symbols in a row from the left reel on a line, per 1 coin bet on the line. WILD stands in for any
 // symbol but BONUS; five WILD on a line pay the most.
@@ -20,7 +20,7 @@ export const SCAT = [0, 0, 0, 2, 10, 50]; // 3, 4, 5 BONUS anywhere on the scree
 export const FREE_SPINS = 10;             // 3+ BONUS give this many free spins...
 export const FREE_MULT = 2;               // ...whose wins are doubled
 export const FREE_MAX = 100;              // free spins per round at most, the ones given again included
-export const GAMBLE_MAX = 5;              // doublings in a row at most in the gamble
+export const GAMBLE_MAX = 5;              // cards in a row at most in the gamble
 
 export const MAX_LINES = 20;
 export const BETS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2500, 5000]; // bet per line
@@ -60,10 +60,20 @@ function makeStrip(w, seed) {
 }
 export const STRIPS = [0, 1, 2, 3, 4].map(i => makeStrip(WEIGHTS, 1234 + i * 77));
 
-// The gamble card: suit 0..3 (the first two are red), rank 0..12
-export const SUITS = 4;
-export const RANKS = 13;
-export const isRed = suit => suit < 2;
+// The gamble: four cards face down, one of each, the player picks one. The win is multiplied by its card, rounded
+// down; 0 burns it. Each card is as likely, so the gamble pays back (2 + 1.5 + 0.5 + 0) / 4 = 1 of the win on average.
+export const GAMBLE_CARDS = [2, 1.5, 0.5, 0];
+export const gambleWin = (win, mult) => Math.floor(win * mult);
+
+// The four cards in a random order; rand(n) gives a whole number 0..n-1
+export function dealCards(rand) {
+  const cards = [...GAMBLE_CARDS];
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = rand(i + 1);
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  return cards;
+}
 
 // The three symbols a reel shows, top to bottom, when it stops at pos
 export function visible(reel, pos) {

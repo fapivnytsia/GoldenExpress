@@ -151,7 +151,7 @@ button{font:inherit;color:inherit}
 .led.win b{color:var(--led-green);text-shadow:0 0 10px rgba(92,255,138,.55)}
 .led.win.flash b{animation:ledflash .25s steps(2) 6}
 @keyframes ledflash{50%{opacity:.2}}
-.btns{display:grid;grid-template-columns:auto auto auto auto auto auto auto 1.6fr;gap:10px;align-items:stretch}
+.btns{display:grid;grid-template-columns:auto auto auto auto auto auto 1.6fr;gap:10px;align-items:stretch}
 .grp{display:grid;grid-template-columns:44px auto 44px;gap:4px;align-items:center;padding:4px;border-radius:10px;background:#111;box-shadow:inset 0 0 0 1px #2a2a2a}
 .grp .lbl{padding:0 6px;text-align:center;font:600 11px/1.15 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 .cap{
@@ -230,21 +230,23 @@ button{font:inherit;color:inherit}
 .gamble{max-width:520px;text-align:center;justify-items:center}
 .bank{font:400 clamp(30px,8vw,44px)/1 var(--f-led);color:var(--led-green);text-shadow:0 0 12px rgba(92,255,138,.5)}
 .bank small{display:block;font:600 11px var(--f-ui);letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-shadow:none;margin-bottom:4px}
-.card{width:120px;height:168px;perspective:800px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,2.5vw,14px);width:100%;max-width:440px}
+.card{aspect-ratio:5 / 7;perspective:800px;padding:0;border:0;background:none;cursor:pointer;border-radius:12px}
+.card:disabled{cursor:default}
+.card:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.card:not(:disabled):hover .in{transform:translateY(-6px)}
 .card .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s}
 .card.flip .in{transform:rotateY(180deg)}
 .card .face,.card .back{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 8px 20px rgba(0,0,0,.6)}
-.card .back{background:repeating-linear-gradient(45deg,#8a0f1a 0 8px,#5a0710 8px 16px);border:6px solid #f4ead8}
-.card .face{transform:rotateY(180deg);background:#fbf7ee;display:grid;place-items:center;font:400 72px/1 Georgia,"Times New Roman",serif}
-.card .face.r{color:#c4141e}
-.card .face.k{color:#111}
-.card .face small{position:absolute;left:10px;top:8px;font:700 22px/1 Georgia,serif}
-.hist{display:flex;gap:6px;min-height:42px}
-.hist span{width:30px;height:42px;border-radius:5px;background:#fbf7ee;display:grid;place-items:center;font:20px Georgia,serif}
-.hist .r{color:#c4141e}.hist .k{color:#111}
-.gbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
-.gbtns .cap{min-height:58px;font-size:16px}
-.gbtns .cap.k{--cap:#2b2b33}
+.card .back{background:repeating-linear-gradient(45deg,#8a0f1a 0 8px,#5a0710 8px 16px);border:5px solid #f4ead8}
+.card .face{transform:rotateY(180deg);background:#fbf7ee;display:grid;place-items:center;font:400 clamp(20px,6vw,34px)/1 var(--f-title);color:#1a7a32}
+.card .face.half{color:#c47a00}
+.card .face.lose{color:#c4141e;font-size:clamp(28px,8vw,48px)}
+.card.other{opacity:.45}
+.card.mine .face{box-shadow:0 0 0 3px var(--gold), 0 0 22px var(--gold)}
+.hist{display:flex;gap:6px;min-height:30px}
+.hist span{min-width:42px;height:30px;padding:0 6px;border-radius:5px;background:#fbf7ee;display:grid;place-items:center;font:400 14px var(--f-title);color:#1a7a32}
+.hist .half{color:#c47a00}.hist .lose{color:#c4141e}
 
 /* big win */
 .big{position:fixed;inset:0;z-index:45;display:grid;place-items:center;pointer-events:none}
@@ -334,7 +336,6 @@ button{font:inherit;color:inherit}
           <span class="lbl">На линию<br><b id="lBet">1</b></span>
           <button class="cap grey sm" id="betUp" type="button" aria-label="Увеличить ставку">+</button>
         </div>
-        <button class="cap amber" id="bMax" type="button">Макс.<br>ставка</button>
         <button class="cap blue" id="bAuto" type="button" aria-pressed="false">Авто</button>
         <button class="cap red" id="bGamble" type="button" disabled>Риск</button>
         <button class="cap amber" id="bTake" type="button" disabled>Забрать</button>
@@ -354,7 +355,7 @@ button{font:inherit;color:inherit}
       <li><b>WILD</b> заменяет любой символ, кроме BONUS. Пять WILD на линии — главный приз.</li>
       <li><b>BONUS</b> платит в любом месте экрана от общей ставки: 3 — ×2, 4 — ×10, 5 — ×50, и даёт <b>10 бесплатных вращений</b> с удвоенными выигрышами.</li>
       <li>На линии платит только самая дорогая комбинация. Выигрыши разных линий складываются.</li>
-      <li><b>Риск:</b> угадайте цвет карты и удвойте выигрыш, до 5 раз подряд.</li>
+      <li><b>Риск:</b> выберите одну из 4 закрытых карт — ×2, ×1,5, ×0,5 или проигрыш. Выигрыш умножается на её значение (с округлением вниз), до 5 карт подряд.</li>
     </ol>
     <h2 style="font-size:18px">Линии</h2>
     <div class="minis" id="minis"></div>
@@ -366,13 +367,9 @@ button{font:inherit;color:inherit}
   <div class="panel gamble">
     <h2 id="gTitle">Риск</h2>
     <div class="bank"><small>На кону</small><span id="gBank">0</span></div>
-    <div class="card" id="gCard"><div class="in"><div class="back"></div><div class="face" id="gFace"></div></div></div>
+    <div class="cards" id="gCards" role="group" aria-label="Карты"></div>
     <div class="hist" id="gHist" aria-label="Последние карты"></div>
-    <p id="gMsg" style="margin:0;color:var(--dim)">Красная или чёрная? Угадаете — выигрыш удвоится.</p>
-    <div class="gbtns">
-      <button class="cap red" id="gRed" type="button">Красная</button>
-      <button class="cap k" id="gBlack" type="button">Чёрная</button>
-    </div>
+    <p id="gMsg" style="margin:0;color:var(--dim)">Выберите карту: ×2, ×1,5, ×0,5 или проигрыш.</p>
     <button class="cap amber" id="gTake" type="button" style="width:100%">Забрать</button>
   </div>
 </div>
@@ -380,7 +377,7 @@ button{font:inherit;color:inherit}
 <div class="big" id="big" hidden aria-hidden="true"><div><h3 id="bigTitle">Большой выигрыш</h3><b id="bigAmt">0</b></div></div>
 
 <script type="module">
-import * as Rules from './rules.js?v=1';
+import * as Rules from './rules.js?v=2';
 
 const { PAY, SCAT, LINES, BETS, STRIPS, FREE_MULT, GAMBLE_MAX, MAX_LINES, visible } = Rules;
 const $ = s => document.querySelector(s);
@@ -564,7 +561,6 @@ function renderLeds() {
   const busy = playing || free > 0, least = net ? net.least : 0;
   $('#linesDn').disabled = busy || S.lines <= 1 || (S.lines - 1) * bet() < least; $('#linesUp').disabled = busy || S.lines >= MAX_LINES;
   $('#betDn').disabled = busy || S.betIdx <= 0 || S.lines * BETS[S.betIdx - 1] < least; $('#betUp').disabled = busy || S.betIdx >= BETS.length - 1;
-  $('#bMax').disabled = busy;
   $('#bGamble').disabled = busy || pending <= 0 || auto;
   $('#bTake').disabled = busy || pending <= 0;
   $('#bGamble').classList.toggle('blink', pending > 0 && !busy && !auto);
@@ -593,12 +589,6 @@ $('#linesDn').onclick = () => { S.lines = Math.max(1, S.lines - 1); sBtn(); afte
 $('#linesUp').onclick = () => { S.lines = Math.min(MAX_LINES, S.lines + 1); sBtn(); afterBetChange(); };
 $('#betDn').onclick = () => { S.betIdx = Math.max(0, S.betIdx - 1); sBtn(); afterBetChange(); };
 $('#betUp').onclick = () => { S.betIdx = Math.min(BETS.length - 1, S.betIdx + 1); sBtn(); afterBetChange(); };
-$('#bMax').onclick = async () => {
-  if (playing) return;
-  await collect();
-  S.lines = MAX_LINES; let i = BETS.length - 1; while (i > 0 && BETS[i] * MAX_LINES > S.credit) i--; S.betIdx = i;
-  sBtn(); afterBetChange(); spin();
-};
 
 /* ---------- spin ---------- */
 function clearWins() {
@@ -791,64 +781,74 @@ function coinTick() {
 }
 
 /* ---------- gamble ---------- */
-// Suit glyphs in the order of the rules: the first two are red
-const CARD_SUITS = [['♥', 'r'], ['♦', 'r'], ['♣', 'k'], ['♠', 'k']];
-const CARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
+// Four cards face down: the player picks one, its multiplier applies to the win, the rest are shown after
+const cardText = m => (m ? `×${String(m).replace('.', ',')}` : '✕');
+const cardKind = m => (m === 0 ? 'lose' : m < 1 ? 'half' : '');
 const hist = [];
+function dealBacks() {
+  $('#gCards').innerHTML = Rules.GAMBLE_CARDS.map((_, i) =>
+    `<button class="card" type="button" data-i="${i}" aria-label="Карта ${i + 1}"><div class="in"><div class="back"></div><div class="face"></div></div></button>`
+  ).join('');
+  document.querySelectorAll('#gCards .card').forEach(c => { c.onclick = () => pickCard(+c.dataset.i); });
+}
+function cardsEnabled(on) {
+  document.querySelectorAll('#gCards .card').forEach(c => { c.disabled = !on; });
+  $('#gTake').disabled = !on;
+}
 function openGamble() {
   if (pending <= 0 || playing) return;
   clearWins();
   $('#gBank').textContent = fmt(pending);
-  $('#gCard').classList.remove('flip');
-  $('#gMsg').textContent = 'Красная или чёрная? Угадаете — выигрыш удвоится.';
-  $('#gRed').disabled = $('#gBlack').disabled = $('#gTake').disabled = false;
+  $('#gMsg').textContent = 'Выберите карту: ×2, ×1,5, ×0,5 или проигрыш.';
+  dealBacks(); cardsEnabled(true);
   renderHist();
-  $('#ovGamble').hidden = false; $('#gRed').focus();
+  $('#ovGamble').hidden = false; $('#gCards .card').focus();
 }
-function renderHist() { $('#gHist').innerHTML = hist.slice(-6).map(([s, r, c]) => `<span class="${c}">${s}</span>`).join(''); }
-// The card: from the server online, here otherwise
-async function drawCard(color) {
+function renderHist() { $('#gHist').innerHTML = hist.slice(-6).map(m => `<span class="${cardKind(m)}">${cardText(m)}</span>`).join(''); }
+// The cards as they lay and the picked one: from the server online, here otherwise
+async function drawCards(pick) {
   if (!net) {
-    const card = { suit: rand(Rules.SUITS), rank: rand(Rules.RANKS) };
-    return { card, right: Rules.isRed(card.suit) === (color === 'r') };
+    const cards = Rules.dealCards(rand);
+    return { cards, pick, mult: cards[pick] };
   }
-  const r = await call('gamble', { color });
+  const r = await call('gamble', { pick });
   if (r.closed) { lost(); return null; }
-  if (r.error || !r.card) {
+  if (r.error || !r.cards) {
     if (typeof r.balance === 'number') { pending = r.pending || 0; S.credit = r.balance - pending; shownCredit = S.credit; }
     $('#gMsg').textContent = r.error || 'Сервер игры не ответил';
     return null;
   }
   return r;
 }
-async function guess(color) {
-  $('#gRed').disabled = $('#gBlack').disabled = $('#gTake').disabled = true;
-  const r = await drawCard(color);
+async function pickCard(pick) {
+  cardsEnabled(false);
+  const r = await drawCards(pick);
   if (!r) { await sleep(1500); return closeGamble(true); }
-  const [suit, c] = CARD_SUITS[r.card.suit], rank = CARD_RANKS[r.card.rank];
-  const face = $('#gFace'); face.className = 'face ' + c; face.innerHTML = `<small>${rank}</small>${suit}`;
-  $('#gCard').classList.add('flip'); tone(500, 0, .08, 'triangle', .05, 900);
+  const els = [...document.querySelectorAll('#gCards .card')];
+  els.forEach((el, i) => { const f = el.querySelector('.face'); f.className = 'face ' + cardKind(r.cards[i]); f.textContent = cardText(r.cards[i]); });
+  // The picked card first, the others a moment later
+  els[pick].classList.add('flip', 'mine'); tone(500, 0, .08, 'triangle', .05, 900);
   await sleep(RM ? 100 : 550);
-  hist.push([suit, rank, c]); renderHist();
+  els.forEach((el, i) => { if (i !== pick) el.classList.add('flip', 'other'); });
+  hist.push(r.mult); renderHist();
   // Online the balance has the result in it: what is not at risk any more is credit
-  const next = net ? r.pending : r.right ? pending * 2 : 0;
+  const next = net ? r.pending : Rules.gambleWin(pending, r.mult);
   if (net) { S.credit = r.balance - next; shownCredit = S.credit; }
+  const was = pending;
   pending = next;
-  if (r.right) {
-    gambleCount++; sWin(false);
-    $('#gBank').textContent = fmt(pending);
-    if (gambleCount >= GAMBLE_MAX) { $('#gMsg').textContent = `${GAMBLE_MAX} удвоений подряд — это предел. Выигрыш забран.`; await sleep(1200); return closeGamble(true); }
-    $('#gMsg').textContent = `Угадали! На кону ${fmt(pending)}. Ещё раз или забрать?`;
-    await sleep(RM ? 200 : 700);
-    $('#gCard').classList.remove('flip');
-    await sleep(RM ? 50 : 350);
-    $('#gRed').disabled = $('#gBlack').disabled = $('#gTake').disabled = false;
-  } else {
-    sLose(); $('#gBank').textContent = '0';
-    $('#gMsg').textContent = 'Не угадали. Выигрыш сгорел.';
-    await sleep(1200); closeGamble(false);
-  }
   renderLeds();
+  if (pending <= 0) {
+    sLose(); $('#gBank').textContent = '0';
+    $('#gMsg').textContent = 'Проигрыш. Выигрыш сгорел.';
+    await sleep(1500); return closeGamble(false);
+  }
+  gambleCount++;
+  if (pending >= was) sWin(false); else sLose();
+  $('#gBank').textContent = fmt(pending);
+  if (gambleCount >= GAMBLE_MAX) { $('#gMsg').textContent = `${GAMBLE_MAX} карт подряд — это предел. Выигрыш забран.`; await sleep(1500); return closeGamble(true); }
+  $('#gMsg').textContent = `${cardText(r.mult)}! На кону ${fmt(pending)}. Ещё карту или забрать?`;
+  await sleep(RM ? 300 : 1300);
+  dealBacks(); cardsEnabled(true);
 }
 async function closeGamble(take) {
   $('#ovGamble').hidden = true;
@@ -857,8 +857,6 @@ async function closeGamble(take) {
   else if (pending === 0) setMsg('Риск не удался. Новая попытка!', 'bad');
   $('#bSpin').focus();
 }
-$('#gRed').onclick = () => guess('r');
-$('#gBlack').onclick = () => guess('k');
 $('#gTake').onclick = () => closeGamble(true);
 $('#bGamble').onclick = () => { sBtn(); openGamble(); };
 $('#bTake').onclick = async () => { sBtn(); clearWins(); setMsg(`Забрано ${fmt(pending)}`, 'good'); await collect(); };
